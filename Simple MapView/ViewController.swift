@@ -13,6 +13,22 @@ import MapKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var myMapView: MKMapView!
+    var foodStoreNames = ["늘해랑","번개반점","아딸","왕짜장","토마토도시락","홍콩반점"]
+    var foodStoreAddress = ["부산광역시 부산진구 양정2동 336-17",
+                            "부산광역시 부산진구 양정동 418-282",
+                            "부산광역시 부산진구 양정동 393-18",
+                            "부산광역시 부산진구 양정1동 356-22",
+                            "부산광역시 부산진구 양정1동 350-1",
+                            "부산광역시 부산진구 양정동 353-38"]
+    var foodStoreTel = ["051-1111-1234",
+                        "051-2222-1234",
+                        "051-3333-1234",
+                        "051-4444-1234",
+                        "051-5555-1234",
+                        "051-6666-1234"]
+    var count = 0
+    var annotations = [MKPointAnnotation]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -65,47 +81,64 @@ class ViewController: UIViewController {
         
         // geocoding : 주소 -> 위도,경도
         // 주소를 가져와서 위도 경도를 계산해서 뿌려주는 형식
-        let addr = "부산광역시 부산진구 양정1동 350-1"
-        let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(addr) {
-            
-            //후행 클로져 형식
-            (placemarks: [CLPlacemark]?, error:Error?) -> Void in
-            if let error = error {
-                print(error)
-                return
-            } else {
-                print("nil 발생")
-            }
-            
-            if let placemarks = placemarks {
-                let placemark = placemarks[0]
-//                print(placemark.location!)
-//                print(placemark.name!)
-//                print(placemark.postalCode!)
-//                print(placemark.country!)
-                let loc02 = placemark.location?.coordinate
-                let pin03 = MKPointAnnotation()
-                pin03.coordinate = loc02!
-                pin03.title = "토마토 도시락"
-                pin03.subtitle = addr
-                self.myMapView.addAnnotation(pin03)
+//        let addr = "부산광역시 부산진구 양정1동 350-1"
+//        let geocoder = CLGeocoder()
+//
+//        geocoder.geocodeAddressString(addr) {
+//
+//            //후행 클로져 형식
+//            (placemarks: [CLPlacemark]?, error:Error?) -> Void in
+//            if let error = error {
+//                print(error)
+//                return
+//            } else {
+//                print("nil 발생")
+//            }
+//
+//            if let placemarks = placemarks {
+//                let placemark = placemarks[0]
+//
+//                let loc02 = placemark.location?.coordinate
+//                let pin03 = MKPointAnnotation()
+//                pin03.coordinate = loc02!
+//                pin03.title = "토마토 도시락"
+//                pin03.subtitle = addr
+//                self.myMapView.addAnnotation(pin03)
+//
+//            } else {
+//                print("nil 발생")
+//            }
+//        }
+        
+        for addr in foodStoreAddress {
+            let geocoder = CLGeocoder()
+            geocoder.geocodeAddressString(addr) {
+                (placemarks: [CLPlacemark]?, error: Error?) -> Void in
+                    if let myError = error {
+                        print(myError)
+                        return
+                    }
+                    
+                    let myPlacemark = placemarks![0]
+//                    print(myPlacemark.location?.coordinate)
+                    let loc = myPlacemark.location?.coordinate
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = loc!
+                    annotation.title = self.foodStoreNames[self.count]
+                    annotation.subtitle = self.foodStoreTel[self.count]
+                    self.count = self.count + 1
+                self.annotations.append(annotation)
+
+                print(self.annotations)
                 
-            } else {
-                print("nil 발생")
+                self.myMapView.addAnnotations(self.annotations)
+                
+//                self.myMapView.addAnnotation(annotation)
+                
+                
+                
             }
-            
-            
         }
-        
-        
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
